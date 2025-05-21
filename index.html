@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Gasto de Combustível</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Combustível Carro<i class="fas fa-gas-pump"></i></h2>
+        <form id="fuelForm">
+            <div class="mb-3">
+                <label for="distance" class="form-label">Distância Percorrida (em km) <i class="fas fa-road"></i></label>
+                <input type="number" class="form-control" id="distance" placeholder="Exemplo: 30" step="any" required>
+            </div>
+            <div class="mb-3">
+                <label for="consumption" class="form-label">Consumo Médio do Veículo (km/l) <i class="fas fa-car"></i></label>
+                <input type="number" class="form-control" id="consumption" placeholder="Exemplo: 10" step="any" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Preço do Combustível (R$/l) <i class="fas fa-dollar-sign"></i></label>
+                <input type="number" class="form-control" id="price" placeholder="Exemplo: 5.50" step="any" required>
+            </div>
+            <div class="mb-3">
+                <label for="tripType" class="form-label">Tipo de Viagem <i class="fas fa-route"></i></label>
+                <select id="tripType" class="form-control">
+                    <option value="oneWay">Somente Ida</option>
+                    <option value="roundTrip">Ida e Volta</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Calcular <i class="fas fa-calculator"></i></button>
+        </form>
+
+        <div id="result" class="result">
+            <h3>Gasto Estimado:</h3>
+            <p id="gasolineCost"></p>
+            <p id="ethanolCost"></p>
+        </div>
+        <div id="loading" class="loading">Calculando...</div>
+    </div>
+
+    <script>
+        document.getElementById('fuelForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Exibe a mensagem de carregamento
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none'; // Oculta os resultados anteriores
+
+            // Pegando os valores dos inputs
+            const distance = parseFloat(document.getElementById('distance').value);
+            const consumption = parseFloat(document.getElementById('consumption').value);
+            const price = parseFloat(document.getElementById('price').value);
+            const tripType = document.getElementById('tripType').value;
+
+            // Calculando o gasto com gasolina e etanol
+            let distanceToCalculate = distance;
+            if (tripType === 'roundTrip') {
+                distanceToCalculate *= 2; // Se for ida e volta, dobra a distância
+            }
+
+            const gasolineLiters = distanceToCalculate / consumption;
+            const ethanolLiters = distanceToCalculate / (consumption * 0.7); // Etanol é geralmente 30% mais "gasto" que gasolina
+            const gasolineCost = gasolineLiters * price;
+            const ethanolCost = ethanolLiters * price;
+
+            // Espera 2 segundos e então exibe o resultado
+            setTimeout(function() {
+                document.getElementById('gasolineCost').innerText = `Custo com Gasolina: R$ ${gasolineCost.toFixed(2)}`;
+                document.getElementById('ethanolCost').innerText = `Custo com Etanol: R$ ${ethanolCost.toFixed(2)}`;
+                
+                // Esconde a mensagem de carregamento e mostra o resultado
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+            }, 2000); // Simula um tempo de processamento
+        });
+    </script>
+
+</body>
+</html>
